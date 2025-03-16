@@ -4,22 +4,58 @@
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js"></script>
-    
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4Anm0VIAdW1T21BFuwO4zmERiHGpKJKQ",
-            authDomain: "aatralregistration.firebaseapp.com",
-            projectId: "aatralregistration",
-            storageBucket: "aatralregistration.firebasestorage.app",
-            messagingSenderId: "747309277340",
-            appId: "1:747309277340:web:7e17d1b99df8c252480d59",
-            measurementId: "G-DB505504HF"
-        };
 
+    <script>
         // Initialize Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyB4Anm0VIAdW1T21BFuwO4zmERiHGpKJKQ",
+          authDomain: "aatralregistration.firebaseapp.com",
+          projectId: "aatralregistration",
+          storageBucket: "aatralregistration.firebasestorage.app",
+          messagingSenderId: "747309277340",
+          appId: "1:747309277340:web:7e17d1b99df8c252480d59",
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        function submitForm(event) {
+            event.preventDefault(); // Prevent form from reloading the page
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const department = document.getElementById("department").value;
+            const otherDept = document.getElementById("other-dept").value;
+            const phone = document.getElementById("phone").value;
+            const year = document.getElementById("year").value;
+            const college = document.getElementById("college").value;
+            const workshop = document.getElementById("workshop").value;
+            const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
+
+            if (!name || !email || !phone || !college) {
+                alert("Please fill in all required fields!");
+                return;
+            }
+
+            db.collection("registrations").add({
+                name: name,
+                email: email,
+                department: department === "Other" ? otherDept : department,
+                phone: phone,
+                year: year,
+                college: college,
+                workshop: workshop,
+                totalFee: totalFee,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                alert("Registration Successful!");
+                document.getElementById("registrationForm").reset(); // Clear the form
+                document.getElementById("total-fee").innerText = "₹200"; // Reset total fee
+            })
+            .catch(error => {
+                alert("Error: " + error.message);
+            });
+        }
     </script>
 
     <meta charset="UTF-8">
@@ -49,52 +85,52 @@
 
 <div class="container">
     <h2 class="text-center">Event Registration</h2>
-    
-    <label>Name:</label>
-    <input type="text" id="name" class="form-control" required>
 
-    <label class="mt-3">Email:</label>
-    <input type="email" id="email" class="form-control" required>
+    <form id="registrationForm" onsubmit="submitForm(event)">
+        <label>Name:</label>
+        <input type="text" id="name" class="form-control" required>
 
-    <label class="mt-3">Department:</label>
-    <select id="department" class="form-control" onchange="checkOtherDepartment()">
-        <option value="CIVIL">CIVIL</option>
-        <option value="MECH">MECH</option>
-        <option value="ECE">ECE</option>
-        <option value="EEE">EEE</option>
-        <option value="CSE">CSE</option>
-        <option value="Other">Other</option>
-    </select>
+        <label class="mt-3">Email:</label>
+        <input type="email" id="email" class="form-control" required>
 
-    <input type="text" id="other-dept" class="form-control hidden mt-2" placeholder="Enter your department">
+        <label class="mt-3">Department:</label>
+        <select id="department" class="form-control" onchange="checkOtherDepartment()">
+            <option value="CIVIL">CIVIL</option>
+            <option value="MECH">MECH</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="CSE">CSE</option>
+            <option value="Other">Other</option>
+        </select>
 
-    <label class="mt-3">Phone No:</label>
-    <input type="tel" id="phone" class="form-control" required>
+        <input type="text" id="other-dept" class="form-control hidden mt-2" placeholder="Enter your department">
 
-    <label class="mt-3">Year:</label>
-    <select id="year" class="form-control">
-        <option>I</option>
-        <option>II</option>
-        <option>III</option>
-        <option>IV</option>
-    </select>
+        <label class="mt-3">Phone No:</label>
+        <input type="tel" id="phone" class="form-control" required>
 
-    <label class="mt-3">College Name:</label>
-    <input type="text" id="college" class="form-control" required>
+        <label class="mt-3">Year:</label>
+        <select id="year" class="form-control">
+            <option>I</option>
+            <option>II</option>
+            <option>III</option>
+            <option>IV</option>
+        </select>
 
-    <label class="mt-3">Attend Workshop? (₹250 extra)</label>
-    <select id="workshop" class="form-control" onchange="calculateTotal()">
-        <option value="No">No</option>
-        <option value="Yes">Yes</option>
-    </select>
+        <label class="mt-3">College Name:</label>
+        <input type="text" id="college" class="form-control" required>
 
-    <label class="mt-3">Total Registration Fee (₹200 + Workshop Fee if applicable):</label>
-    <h4 id="total-fee">₹200</h4>
+        <label class="mt-3">Attend Workshop? (₹250 extra)</label>
+        <select id="workshop" class="form-control" onchange="calculateTotal()">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+        </select>
 
-    <button class="btn btn-primary mt-3 w-100" onclick="payWithUPI()">Pay with UPI</button>
+        <label class="mt-3">Total Registration Fee (₹200 + Workshop Fee if applicable):</label>
+        <h4 id="total-fee">₹200</h4>
 
-    <!-- Submit Button -->
-    <button class="btn btn-success mt-3 w-100" onclick="submitForm()">Submit Registration</button>
+        <button type="button" class="btn btn-primary mt-3 w-100" onclick="payWithUPI()">Pay with UPI</button>
+        <button type="submit" class="btn btn-success mt-3 w-100">Submit Registration</button>
+    </form>
 </div>
 
 <script>
@@ -122,52 +158,6 @@
         let upiLink = `upi://pay?pa=${upiID}&pn=EventRegistration&mc=&tid=&tr=&tn=Event+Registration&am=${amount}&cu=INR`;
 
         window.location.href = upiLink;
-    }
-
-    function submitForm() {
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const department = document.getElementById("department").value;
-        const otherDept = document.getElementById("other-dept").value;
-        const phone = document.getElementById("phone").value;
-        const year = document.getElementById("year").value;
-        const college = document.getElementById("college").value;
-        const workshop = document.getElementById("workshop").value;
-        const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
-
-        // Validate required fields
-        if (!name || !email || !phone || !college) {
-            alert("Please fill in all required fields!");
-            return;
-        }
-
-        // Store data in Firestore
-        db.collection("registrations").add({
-            name: name,
-            email: email,
-            department: department === "Other" ? otherDept : department,
-            phone: phone,
-            year: year,
-            college: college,
-            workshop: workshop,
-            totalFee: totalFee,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
-            alert("Registration Successful!");
-            document.getElementById("name").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("department").value = "CIVIL";
-            document.getElementById("other-dept").value = "";
-            document.getElementById("phone").value = "";
-            document.getElementById("year").value = "I";
-            document.getElementById("college").value = "";
-            document.getElementById("workshop").value = "No";
-            calculateTotal();
-        })
-        .catch(error => {
-            alert("Error: " + error.message);
-        });
     }
 </script>
 
