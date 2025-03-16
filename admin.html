@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js"></script>
+<script>
+    firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+            window.location.href = "login.html"; // Redirect if not logged in
+        }
+    });
+
+    function logout() {
+        firebase.auth().signOut().then(() => {
+            window.location.href = "login.html";
+        });
+    }
+</script>
+
+<button onclick="logout()" class="btn btn-danger">Logout</button>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
@@ -32,12 +49,12 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "your-project-id.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "your-messaging-sender-id",
-            appId: "your-app-id"
+            apiKey: "AIzaSyB4Anm0VIAdW1T21BFuwO4zmERiHGpKJKQ",
+              authDomain: "aatralregistration.firebaseapp.com",
+              projectId: "aatralregistration",
+              storageBucket: "aatralregistration.firebasestorage.app",
+              messagingSenderId: "747309277340",
+              appId: "1:747309277340:web:7e17d1b99df8c252480d59",
         };
 
         firebase.initializeApp(firebaseConfig);
