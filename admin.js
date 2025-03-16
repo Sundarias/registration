@@ -29,3 +29,16 @@ onAuthStateChanged(auth, (user) => {
 
 // Export login function
 export { adminLogin };
+import { auth } from "./firebase.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+function logout() {
+    signOut(auth).then(() => {
+        alert("Logged out successfully.");
+        window.location.href = "admin-login.html";
+    }).catch((error) => {
+        alert("Error: " + error.message);
+    });
+}
+
+export { logout };
