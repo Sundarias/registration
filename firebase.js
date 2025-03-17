@@ -17,21 +17,22 @@
 function submitForm(e) {
     e.preventDefault(); // Prevent default form submission
 
-    // Get input values correctly
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    var department = document.getElementById('department').value;
-    var otherDept = document.getElementById('other-dept').value;
-    var phone = document.getElementById('phone').value;
-    var college = document.getElementById('college').value;
-    var workshop = document.getElementById('workshop').value; // Dropdown selection
-    var totalFee = document.getElementById('total-fee').innerText.replace("₹", ""); // Get total fee
+    // Get input values safely
+    var name = document.getElementById('name')?.value || "";
+    var email = document.getElementById('email')?.value || "";
+    var department = document.getElementById('department')?.value || "";
+    var otherDept = document.getElementById('other-dept')?.value || "";
+    var phone = document.getElementById('phone')?.value || "";
+    var college = document.getElementById('college')?.value || "";
+    var workshop = document.getElementById('workshop')?.value || "No"; // Default to "No" if not found
+    var totalFeeElement = document.getElementById('total-fee');
+    var totalFee = totalFeeElement ? totalFeeElement.innerText.replace("₹", "") : "0";
 
     // Get selected checkboxes for Technical & Non-Technical events
     var selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(cb => cb.value);
     var selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(cb => cb.value);
 
-    // Check if required fields are filled
+    // Debugging: Check if any field is empty
     if (!name || !email || !phone || !college) {
         alert("Please fill in all required fields!");
         return;
@@ -52,14 +53,15 @@ function submitForm(e) {
     })
     .then(() => {
         alert("Registration Successful!");
-        document.getElementById("registrationForm").reset(); // Reset the form
-        document.getElementById("total-fee").innerText = "₹0"; // Reset total fee display
-        checkOtherDepartment(); // Hide "Other Department" input
+        document.getElementById("registrationForm").reset(); // Reset form
+        document.getElementById("total-fee").innerText = "₹0"; // Reset total fee
+        checkOtherDepartment(); // Hide "Other Department" input if needed
     })
     .catch(error => {
         alert("Error: " + error.message);
     });
 }
+
 
 
   const getElementByVal = (id) => {
