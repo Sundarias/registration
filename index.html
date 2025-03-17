@@ -17,12 +17,43 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            max-height: 90vh;
         }
-        .hidden {
-            display: none;
-        }
-        h2 {
+        h2, h4 {
             text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
         }
     </style>
     <script type="module">
@@ -80,49 +111,55 @@
             }
         }
 
+        function payWithUPI(event) {
+            submitForm(event);
+            let amount = document.getElementById("total-fee").innerText.replace("₹", "");
+            let upiID = "sundarfscop-1@okhdfcbank";
+            let upiLink = `upi://pay?pa=${upiID}&pn=EventRegistration&mc=&tid=&tr=&tn=Event+Registration&am=${amount}&cu=INR`;
+            window.location.href = upiLink;
+        }
+
         window.calculateTotal = calculateTotal;
         window.submitForm = submitForm;
+        window.payWithUPI = payWithUPI;
     </script>
 </head>
 <body>
     <div class="container">
         <h2>Event Registration</h2>
         <form id="registrationForm">
-            <input type="text" id="name" placeholder="Name" required class="form-control">
-            <input type="email" id="email" placeholder="Email" required class="form-control">
-            <input type="tel" id="phone" placeholder="Phone No" required class="form-control">
-            <input type="text" id="college" placeholder="College" required class="form-control">
-            
-            <label>Workshop (₹250 extra)</label>
-            <select id="workshop" onchange="calculateTotal()" class="form-control">
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-            </select>
-
-            <label>Technical Events</label>
-            <div>
-                <input type="checkbox" name="technical" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation
-                <input type="checkbox" name="technical" value="Innovision" onchange="calculateTotal()"> Innovision
-                <input type="checkbox" name="technical" value="Brain Charge" onchange="calculateTotal()"> Brain Charge
-                <input type="checkbox" name="technical" value="Spark Search" onchange="calculateTotal()"> Spark Search
-                <input type="checkbox" name="technical" value="Error 404" onchange="calculateTotal()"> Error 404
-                <input type="checkbox" name="technical" value="Volt Vision" onchange="calculateTotal()"> Volt Vision
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="name" required class="form-control">
             </div>
-
-            <label>Non-Technical Events</label>
-            <div>
-                <input type="checkbox" name="nonTechnical" value="Photography Contest" onchange="calculateTotal()"> Photography Contest
-                <input type="checkbox" name="nonTechnical" value="IPL Auction" id="ipl" onchange="calculateTotal()"> IPL Auction (₹100)
-                <input type="checkbox" name="nonTechnical" value="Chess Tournament" onchange="calculateTotal()"> Chess Tournament
-                <input type="checkbox" name="nonTechnical" value="Free-Fire Tournament" id="freefire" onchange="calculateTotal()"> Free-Fire Tournament (₹100)
-                <input type="checkbox" name="nonTechnical" value="Tasty Talk" onchange="calculateTotal()"> Tasty Talk
-                <input type="checkbox" name="nonTechnical" value="Work Of Art" onchange="calculateTotal()"> Work Of Art
-                <input type="checkbox" name="nonTechnical" value="Wordel" onchange="calculateTotal()"> Wordel
-                <input type="checkbox" name="nonTechnical" value="Memory Blitz" onchange="calculateTotal()"> Memory Blitz
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required class="form-control">
             </div>
-
-            <h4>Total Registration Fee: <span id="total-fee">₹0</span></h4>
-            <button type="submit" onclick="submitForm(event)" class="btn btn-primary">Submit Registration</button>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="phone" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label>College</label>
+                <input type="text" id="college" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Workshop (₹250)</label>
+                <select id="workshop" onchange="calculateTotal()" class="form-control">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Technical Events (₹200 Total)</label>
+                <input type="checkbox" name="technical" value="Watt a Presentation"> Watt a Presentation<br>
+                <input type="checkbox" name="technical" value="Innovision"> Innovision<br>
+                <input type="checkbox" name="technical" value="Brain Charge"> Brain Charge<br>
+            </div>
+            <h4>Total Fee: <span id="total-fee">₹0</span></h4>
+            <button type="submit" onclick="submitForm(event)" class="btn btn-primary">Submit</button>
+            <button type="button" onclick="payWithUPI(event)" class="btn btn-success">Pay with UPI</button>
         </form>
     </div>
 </body>
