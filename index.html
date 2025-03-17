@@ -1,65 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-        body {
-            background: linear-gradient(135deg, #74ebd5, #9face6);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            max-width: 600px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            overflow-y: auto;
-            max-height: 90vh;
-        }
-        h2, h4 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-control, .event-checkbox {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .btn {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-success {
-            background-color: #28a745;
-            color: white;
-        }
-    </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyB4Anm0VIAdW1T21BFuwO4zmERiHGpKJKQ",
             authDomain: "aatralregistration.firebaseapp.com",
@@ -68,99 +12,113 @@
             messagingSenderId: "747309277340",
             appId: "1:747309277340:web:7e17d1b99df8c252480d59",
         };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        function calculateTotal() {
-            let baseFee = 0;
-            let workshop = document.getElementById("workshop").value;
-            let technicalEvents = document.querySelectorAll("input[name='technical']:checked");
-            let nonTechnicalEvents = document.querySelectorAll("input[name='nonTechnical']:checked");
-
-            if (workshop === "Yes") baseFee += 250;
-            if (technicalEvents.length > 0 || nonTechnicalEvents.length > 0) baseFee += 200;
-
-            if (document.getElementById("ipl").checked) baseFee += 100;
-            if (document.getElementById("freefire").checked) baseFee += 100;
-
-            document.getElementById("total-fee").innerText = `₹${baseFee}`;
+        function checkOtherDepartment() {
+            let deptSelect = document.getElementById("department");
+            let otherDept = document.getElementById("other-dept");
+            otherDept.style.display = deptSelect.value === "Other" ? "block" : "none";
         }
 
-        async function submitForm(event) {
-            event.preventDefault();
-            const name = document.getElementById("name").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const phone = document.getElementById("phone").value.trim();
-            const college = document.getElementById("college").value.trim();
-            const workshop = document.getElementById("workshop").value;
-            const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
-            
-            let selectedTechnical = [...document.querySelectorAll("input[name='technical']:checked")].map(e => e.value);
-            let selectedNonTechnical = [...document.querySelectorAll("input[name='nonTechnical']:checked")].map(e => e.value);
+        function calculateTotal() {
+            let total = 0;
+            if (document.getElementById("workshop").value === "Yes") total += 250;
+            document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").forEach(e => {
+                total += (e.value === "IPL Auction" || e.value === "Free-Fire Tournament") ? 100 : 200;
+            });
+            document.getElementById("total-fee").innerText = `₹${total}`;
+        }
 
-            try {
-                await addDoc(collection(db, "registrations"), {
-                    name, email, phone, college, workshop, technicalEvents: selectedTechnical, nonTechnicalEvents: selectedNonTechnical, totalFee, timestamp: serverTimestamp()
-                });
+        function submitForm(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const department = document.getElementById("department").value;
+            const otherDept = document.getElementById("other-dept").value;
+            const phone = document.getElementById("phone").value;
+            const year = document.getElementById("year").value;
+            const college = document.getElementById("college").value;
+            const workshop = document.getElementById("workshop").value;
+            let selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(e => e.value);
+            let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
+            const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
+            if (!name || !email || !phone || !college) {
+                alert("Please fill in all required fields!");
+                return;
+            }
+            db.collection("registrations").add({
+                name,
+                email,
+                department: department === "Other" ? otherDept : department,
+                phone,
+                year,
+                college,
+                workshop,
+                technicalEvents: selectedTechEvents,
+                nonTechnicalEvents: selectedNonTechEvents,
+                totalFee,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
                 alert("Registration Successful!");
                 document.getElementById("registrationForm").reset();
                 document.getElementById("total-fee").innerText = "₹0";
-            } catch (error) {
+                checkOtherDepartment();
+            }).catch(error => {
                 alert("Error: " + error.message);
-            }
+            });
         }
-
-        function payWithUPI(event) {
-            submitForm(event);
-            let amount = document.getElementById("total-fee").innerText.replace("₹", "");
-            let upiID = "sundarfscop-1@okhdfcbank";
-            let upiLink = `upi://pay?pa=${upiID}&pn=EventRegistration&mc=&tid=&tr=&tn=Event+Registration&am=${amount}&cu=INR`;
-            window.location.href = upiLink;
-        }
-
-        window.calculateTotal = calculateTotal;
-        window.submitForm = submitForm;
-        window.payWithUPI = payWithUPI;
     </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Event Registration</h2>
-        <form id="registrationForm">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="name" required class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="email" required class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" id="phone" required class="form-control">
-            </div>
-            <div class="form-group">
-                <label>College</label>
-                <input type="text" id="college" required class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Workshop (₹250)</label>
-                <select id="workshop" onchange="calculateTotal()" class="form-control">
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Technical Events</label>
-                <input type="checkbox" name="technical" value="Watt a Presentation"> Watt a Presentation<br>
-                <input type="checkbox" name="technical" value="Innovision"> Innovision<br>
-                <input type="checkbox" name="technical" value="Brain Charge"> Brain Charge<br>
-            </div>
-            <h4>Total Fee: <span id="total-fee">₹0</span></h4>
-            <button type="submit" onclick="submitForm(event)" class="btn btn-primary">Submit</button>
-            <button type="button" onclick="payWithUPI(event)" class="btn btn-success">Pay with UPI</button>
-        </form>
-    </div>
+    <form id="registrationForm" onsubmit="submitForm(event)">
+        <label>Name:</label>
+        <input type="text" id="name" required>
+        <label>Email:</label>
+        <input type="email" id="email" required>
+        <label>Department:</label>
+        <select id="department" onchange="checkOtherDepartment()">
+            <option value="CIVIL">CIVIL</option>
+            <option value="MECH">MECH</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="CSE">CSE</option>
+            <option value="Other">Other</option>
+        </select>
+        <input type="text" id="other-dept" placeholder="Enter department" style="display: none;">
+        <label>Phone No:</label>
+        <input type="tel" id="phone" required>
+        <label>Year:</label>
+        <select id="year">
+            <option>I</option>
+            <option>II</option>
+            <option>III</option>
+            <option>IV</option>
+        </select>
+        <label>College Name:</label>
+        <input type="text" id="college" required>
+        <label>Workshop (₹250):</label>
+        <select id="workshop" onchange="calculateTotal()">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+        </select>
+        <h4>Technical Events (₹200 each, except IPL Auction ₹100):</h4>
+        <div id="technical-events">
+            <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation<br>
+            <input type="checkbox" value="Innovision" onchange="calculateTotal()"> Innovision<br>
+            <input type="checkbox" value="Error 404" onchange="calculateTotal()"> Error 404<br>
+            <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)<br>
+        </div>
+        <h4>Non-Technical Events (₹200 each, except Free-Fire Tournament ₹100):</h4>
+        <div id="non-technical-events">
+            <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest<br>
+            <input type="checkbox" value="Free-Fire Tournament" onchange="calculateTotal()"> Free-Fire Tournament (₹100)<br>
+        </div>
+        <h4>Total Fee: <span id="total-fee">₹0</span></h4>
+        <button type="submit">Submit Registration</button>
+    </form>
 </body>
 </html>
