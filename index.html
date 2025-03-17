@@ -1,89 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"> </script>
-    
-<script>
-    function checkOtherDepartment() {
-        let deptSelect = document.getElementById("department");
-        let otherDept = document.getElementById("other-dept");
-        otherDept.style.display = deptSelect.value === "Other" ? "block" : "none";
-    }
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    function calculateTotal() {
-        let total = 0;
-        if (document.getElementById("workshop").value === "Yes") total += 250;
-        let selectedEvents = new Set();
-        document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").forEach(e => {
-            selectedEvents.add(e.value);
-        });
-        if (selectedEvents.size > 0) {
-            total += 200;
-        }
-        if (selectedEvents.has("IPL Auction")) total += 100;
-        if (selectedEvents.has("Free-Fire Tournament")) total += 100;
-        document.getElementById("total-fee").innerText = `₹${total}`;
-    }
-
-    function submitForm(event, redirectToUPI = false) {
-        if (event) event.preventDefault();
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const department = document.getElementById("department").value;
-        const otherDept = document.getElementById("other-dept").value;
-        const phone = document.getElementById("phone").value;
-        const college = document.getElementById("college").value;
-        const workshop = document.getElementById("workshop").value;
-        let selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(e => e.value);
-        let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
-        const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
-
-        if (!name || !email || !phone || !college) {
-            alert("Please fill in all required fields!");
-            return;
+        function checkOtherDepartment() {
+            let deptSelect = document.getElementById("department");
+            let otherDept = document.getElementById("other-dept");
+            otherDept.style.display = deptSelect.value === "Other" ? "block" : "none";
         }
 
-        db.collection("registrations").add({
-            name,
-            email,
-            department: department === "Other" ? otherDept : department,
-            phone,
-            college,
-            workshop,
-            technicalEvents: selectedTechEvents,
-            nonTechnicalEvents: selectedNonTechEvents,
-            totalFee,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            alert("Registration Successful!");
-
-            // Reset form after successful submission
-            document.getElementById("registrationForm").reset();
-            document.getElementById("total-fee").innerText = "₹0";
-            checkOtherDepartment();
-
-            // If the function was called from 'Pay with UPI', redirect after saving data
-            if (redirectToUPI) {
-                redirectToUPIApp(totalFee);
+        function calculateTotal() {
+            let total = 0;
+            if (document.getElementById("workshop").value === "Yes") total += 250;
+            let selectedEvents = new Set();
+            document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").forEach(e => {
+                selectedEvents.add(e.value);
+            });
+            if (selectedEvents.size > 0) {
+                total += 200;
             }
-        }).catch(error => {
-            alert("Error: " + error.message);
-        });
-    }
-
-    function redirectToUPIApp(total) {
-        if (total == 0) {
-            alert("Please select events before proceeding to payment.");
-            return;
+            if (selectedEvents.has("IPL Auction")) total += 100;
+            if (selectedEvents.has("Free-Fire Tournament")) total += 100;
+            document.getElementById("total-fee").innerText = `₹${total}`;
         }
-        window.location.href = `upi://pay?pa=sundarfscop-1@okhdfcbank&pn=EventPayment&mc=&tid=&tr=&tn=Event%20Registration&am=${total}&cu=INR`;
-    }
 
-    function payWithUPI() {
-        submitForm(null, true);
-    }
-</script>
+        function submitForm(event, redirectToUPI = false) {
+            if (event) event.preventDefault();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const department = document.getElementById("department").value;
+            const otherDept = document.getElementById("other-dept").value;
+            const phone = document.getElementById("phone").value;
+            const college = document.getElementById("college").value;
+            const workshop = document.getElementById("workshop").value;
+            let selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(e => e.value);
+            let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
+            const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
+
+            if (!name || !email || !phone || !college) {
+                alert("Please fill in all required fields!");
+                return;
+            }
+
+            db.collection("registrations").add({
+                name,
+                email,
+                department: department === "Other" ? otherDept : department,
+                phone,
+                college,
+                workshop,
+                technicalEvents: selectedTechEvents,
+                nonTechnicalEvents: selectedNonTechEvents,
+                totalFee,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Registration Successful!");
+
+                // Reset form after successful submission
+                document.getElementById("registrationForm").reset();
+                document.getElementById("total-fee").innerText = "₹0";
+                checkOtherDepartment();
+
+                if (redirectToUPI) {
+                    redirectToUPIApp(totalFee);
+                }
+            }).catch(error => {
+                alert("Error: " + error.message);
+            });
+        }
+
+        function redirectToUPIApp(total) {
+            if (total == 0) {
+                alert("Please select events before proceeding to payment.");
+                return;
+            }
+            window.location.href = `upi://pay?pa=sundarfscop-1@okhdfcbank&pn=EventPayment&mc=&tid=&tr=&tn=Event%20Registration&am=${total}&cu=INR`;
+        }
+
+        function payWithUPI() {
+            submitForm(null, true);
+        }
+    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,7 +107,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 180vh;
+            height: 100vh;
             margin: 0;
         }
         .container {
@@ -111,7 +122,7 @@
         label, input, select {
             display: block;
             width: 100%;
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 10px;
         }
         h4 {
@@ -123,65 +134,25 @@
             align-items: center;
             gap: 5px;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        button {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-    button {
-        background: linear-gradient(to right, #ff416c, #ff4b2b);
-        color: white;
-        border: none;
-        padding: 12px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 10px;
-        transition: transform 0.2s, box-shadow 0.2s;
-        animation: fadeIn 1s;
-    }
-    
-    button:hover {
-        transform: scale(1.05);
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    button:active {
-        transform: scale(0.95);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-
-        input, select {
-        display: block;
-        width: 100%;
-        margin-bottom: 10px;
-        padding: 10px;
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
-        animation: fadeIn 0.8s ease-in-out;
-    }
-
-    input:focus, select:focus {
-        border-color: #2f80ed;
-        box-shadow: 0px 0px 8px rgba(47, 128, 237, 0.7);
-        transform: scale(1.02);
-        outline: none;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        button:active {
+            transform: scale(0.95);
         }
-    }
     </style>
 </head>
 <body>
@@ -211,57 +182,7 @@
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
             </select>
-            <h4>Technical Events</h4>
-            
-            <div id="technical-events" class="event-grid">
-                <label>Watt a Presentation</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-                
-                <label>Innovision</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
 
-                <label>Brain Charge</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-                
-                <label>Spark Search</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-                
-                <label>Error 404</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-                
-                <label>Volt Vision</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">  
-                
-
-            </div>
-            
-            <h4>Non-Technical Events</h4>
-            
-            <div id="non-technical-events" class="event-grid">
-                <label>Photography contest</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-
-                <label>Chess Tournament</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-                
-                <label>Tasty Talk</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-
-                <label>Work of art</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-
-                <label>Wordel</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-
-                <label>Memory Blitz</label>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
-                
-                <label>IPL Auction (₹100)</label>
-                <input type="checkbox" value="IPL Auction" onchange="calculateTotal()">
-
-                <label>Free-Fire Tournament (₹100)</label>
-                <input type="checkbox" value="Free-Fire Tournament" onchange="calculateTotal()">
-            </div>
             <h4>Total Fee: <span id="total-fee">₹0</span></h4>
             <button type="submit">Submit</button>
             <button type="button" onclick="payWithUPI()">Pay with UPI</button>
