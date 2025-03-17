@@ -33,7 +33,6 @@
         const department = document.getElementById("department").value;
         const otherDept = document.getElementById("other-dept").value;
         const phone = document.getElementById("phone").value;
-        const year = document.getElementById("year").value;
         const college = document.getElementById("college").value;
         const workshop = document.getElementById("workshop").value;
         let selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(e => e.value);
@@ -50,7 +49,6 @@
             email,
             department: department === "Other" ? otherDept : department,
             phone,
-            year,
             college,
             workshop,
             technicalEvents: selectedTechEvents,
