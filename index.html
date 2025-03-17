@@ -104,7 +104,7 @@
         <label>Name:</label>
         <input type="text" id="name" required> <br> 
         <label>Email:</label>
-        <input type="email" id="email" required>
+        <input type="email" id="email" required> <br> 
         <label>Department:</label>
         <select id="department" onchange="checkOtherDepartment()">
             <option value="CIVIL">CIVIL</option>
@@ -114,30 +114,30 @@
             <option value="CSE">CSE</option>
             <option value="Other">Other</option>
         </select>
-        <input type="text" id="other-dept" placeholder="Enter department" style="display: none;">
+        <input type="text" id="other-dept" placeholder="Enter department" style="display: none;"> <br> 
         <label>Phone No:</label>
-        <input type="tel" id="phone" required>
+        <input type="tel" id="phone" required> <br> 
         <label>Year:</label>
         <select id="year">
             <option>I</option>
             <option>II</option>
             <option>III</option>
             <option>IV</option>
-        </select>
+        </select> <br> 
         <label>College Name:</label>
-        <input type="text" id="college" required>
+        <input type="text" id="college" required> <br> 
         <label>Workshop (₹250):</label>
         <select id="workshop" onchange="calculateTotal()">
             <option value="No">No</option>
             <option value="Yes">Yes</option>
-        </select>
+        </select> <br> 
         <h4>Technical Events (₹200 total, except IPL Auction ₹100):</h4>
         <div id="technical-events">
             <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation<br>
             <input type="checkbox" value="Innovision" onchange="calculateTotal()"> Innovision<br>
             <input type="checkbox" value="Error 404" onchange="calculateTotal()"> Error 404<br>
             <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)<br>
-        </div>
+        </div> <br> 
         <h4>Non-Technical Events (₹200 total, except Free-Fire Tournament ₹100):</h4>
         <div id="non-technical-events">
             <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest<br>
