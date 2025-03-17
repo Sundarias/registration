@@ -1,17 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .event-group {
+            margin-top: 10px;
+        }
+        .event-group label {
+            display: flex;
+            align-items: center;
+        }
+        .event-group input {
+            margin-right: 10px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-btn {
+            background: #28a745;
+            color: white;
+        }
+        .upi-btn {
+            background: #007bff;
+            color: white;
+        }
+    </style>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4Anm0VIAdW1T21BFuwO4zmERiHGpKJKQ",
-            authDomain: "aatralregistration.firebaseapp.com",
-            projectId: "aatralregistration",
-            storageBucket: "aatralregistration.firebasestorage.app",
-            messagingSenderId: "747309277340",
-            appId: "1:747309277340:web:7e17d1b99df8c252480d59",
-        };
+        const firebaseConfig = { /* Firebase config here */ };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -22,79 +77,29 @@
         }
 
         function calculateTotal() {
-            let total = 0;
+            let total = 200;
             if (document.getElementById("workshop").value === "Yes") total += 250;
-            let techSelected = document.querySelectorAll("#technical-events input:checked").length > 0;
-            let nonTechSelected = document.querySelectorAll("#non-technical-events input:checked").length > 0;
-            if (techSelected || nonTechSelected) total += 200;
-            document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").forEach(e => {
+            document.querySelectorAll(".event-checkbox:checked").forEach(e => {
                 if (e.value === "IPL Auction" || e.value === "Free-Fire Tournament") total += 100;
             });
             document.getElementById("total-fee").innerText = `₹${total}`;
         }
 
-        function submitForm(event) {
-            event.preventDefault();
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const department = document.getElementById("department").value;
-            const otherDept = document.getElementById("other-dept").value;
-            const phone = document.getElementById("phone").value;
-            const year = document.getElementById("year").value;
-            const college = document.getElementById("college").value;
-            const workshop = document.getElementById("workshop").value;
-            let selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(e => e.value);
-            let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
-            const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
-            if (!name || !email || !phone || !college) {
-                alert("Please fill in all required fields!");
-                return;
-            }
-            db.collection("registrations").add({
-                name,
-                email,
-                department: department === "Other" ? otherDept : department,
-                phone,
-                year,
-                college,
-                workshop,
-                technicalEvents: selectedTechEvents,
-                nonTechnicalEvents: selectedNonTechEvents,
-                totalFee,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Registration Successful!");
-                document.getElementById("registrationForm").reset();
-                document.getElementById("total-fee").innerText = "₹0";
-                checkOtherDepartment();
-            }).catch(error => {
-                alert("Error: " + error.message);
-            });
-        }
-
         function payWithUPI() {
             let amount = document.getElementById("total-fee").innerText.replace("₹", "");
-            let upiID = "sundarfscop-1@okhdfcbank";
-            let upiLink = `upi://pay?pa=${upiID}&pn=EventRegistration&mc=&tid=&tr=&tn=Event+Registration&am=${amount}&cu=INR`;
-            window.location.href = upiLink;
+            window.location.href = `upi://pay?pa=yourupi@upi&pn=EventOrganizer&am=${amount}&cu=INR`;
         }
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #74ebd5, #9face6); text-align: center; }
-        .container { max-width: 500px; background: white; padding: 20px; border-radius: 10px; margin: auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
-        input, select, button { width: 100%; padding: 10px; margin-top: 10px; }
-        .event-section { text-align: left; margin-top: 10px; }
-    </style>
 </head>
 <body>
     <div class="container">
         <h2>Event Registration</h2>
-        <form id="registrationForm" onsubmit="submitForm(event)">
-            <input type="text" id="name" placeholder="Name" required>
-            <input type="email" id="email" placeholder="Email" required>
+        <form id="registrationForm">
+            <label>Name</label>
+            <input type="text" id="name" required>
+            <label>Email</label>
+            <input type="email" id="email" required>
+            <label>Department</label>
             <select id="department" onchange="checkOtherDepartment()">
                 <option value="CIVIL">CIVIL</option>
                 <option value="MECH">MECH</option>
@@ -104,24 +109,28 @@
                 <option value="Other">Other</option>
             </select>
             <input type="text" id="other-dept" placeholder="Enter department" style="display: none;">
-            <input type="tel" id="phone" placeholder="Phone No" required>
-            <input type="text" id="college" placeholder="College Name" required>
+            <label>Phone No</label>
+            <input type="tel" id="phone" required>
+            <label>College Name</label>
+            <input type="text" id="college" required>
+            <label>Workshop (₹250)</label>
             <select id="workshop" onchange="calculateTotal()">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
             </select>
-            <div class="event-section" id="technical-events">
+            <div class="event-group">
                 <h4>Technical Events</h4>
-                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation
-                <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)
+                <label><input type="checkbox" class="event-checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation</label>
+                <label><input type="checkbox" class="event-checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)</label>
             </div>
-            <div class="event-section" id="non-technical-events">
+            <div class="event-group">
                 <h4>Non-Technical Events</h4>
-                <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest
+                <label><input type="checkbox" class="event-checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest</label>
+                <label><input type="checkbox" class="event-checkbox" value="Free-Fire Tournament" onchange="calculateTotal()"> Free-Fire Tournament (₹100)</label>
             </div>
-            <h4>Total Fee: <span id="total-fee">₹0</span></h4>
-            <button type="submit">Submit</button>
-            <button type="button" onclick="payWithUPI()">Pay with UPI</button>
+            <h4>Total Fee: <span id="total-fee">₹200</span></h4>
+            <button type="submit" class="btn submit-btn">Submit</button>
+            <button type="button" class="btn upi-btn" onclick="payWithUPI()">Pay with UPI</button>
         </form>
     </div>
 </body>
