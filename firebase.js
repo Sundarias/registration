@@ -23,7 +23,6 @@ function submitForm(e) {
     var department = document.getElementById('department')?.value || "";
     var otherDept = document.getElementById('other-dept')?.value || "";
     var phone = document.getElementById('phone')?.value || "";
-    var year = document.getElementById("year").value;
     var college = document.getElementById('college')?.value || "";
     var workshop = document.getElementById('workshop')?.value || "No"; // Default to "No" if not found
     var totalFeeElement = document.getElementById('total-fee');
@@ -34,7 +33,7 @@ function submitForm(e) {
     var selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(cb => cb.value);
 
     // Debugging: Check if any field is empty
-    if (!name || !email || !phone || !year || !college) {
+    if (!name || !email || !phone  || !college) {
         alert("Please fill in all required fields!");
         return;
     }
@@ -45,7 +44,6 @@ function submitForm(e) {
         email: email,
         department: department === "Other" ? otherDept : department,
         phone: phone,
-        year: year,
         college: college,
         workshop: workshop,
         technicalEvents: selectedTechEvents,
