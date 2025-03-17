@@ -154,10 +154,15 @@
                 <option value="Yes">Yes</option>
             </select>
             <h4>Technical Events</h4>
-            <div id="technical-events">
-                <label class="event-label"><span>Watt a Presentation</span> <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"></label>
-                <label class="event-label"><span>IPL Auction (₹100)</span> <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"></label>
+            
+            <div id="technical-events" class="event-grid">
+                <label>Watt a Presentation</label>
+                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()">
+                
+                <label>IPL Auction (₹100)</label>
+                <input type="checkbox" value="IPL Auction" onchange="calculateTotal()">
             </div>
+            
             <h4>Non-Technical Events</h4>
             <div id="non-technical-events">
                 <label class="event-label"><span>Photography Contest</span> <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"></label>
