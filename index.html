@@ -23,10 +23,16 @@
 
         function calculateTotal() {
             let total = 0;
-            if (document.getElementById("workshop").value === "Yes") total += 250;
+            let attendingWorkshop = document.getElementById("workshop").value === "Yes";
+            let attendingEvents = document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").length > 0;
+            
+            if (attendingWorkshop) total += 250;
+            if (attendingEvents) total += 200;
+            
             document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").forEach(e => {
-                total += (e.value === "IPL Auction" || e.value === "Free-Fire Tournament") ? 100 : 200;
+                if (e.value === "IPL Auction" || e.value === "Free-Fire Tournament") total += 100;
             });
+            
             document.getElementById("total-fee").innerText = `₹${total}`;
         }
 
@@ -105,14 +111,14 @@
             <option value="No">No</option>
             <option value="Yes">Yes</option>
         </select>
-        <h4>Technical Events (₹200 each, except IPL Auction ₹100):</h4>
+        <h4>Technical Events (₹200 total, except IPL Auction ₹100):</h4>
         <div id="technical-events">
             <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation<br>
             <input type="checkbox" value="Innovision" onchange="calculateTotal()"> Innovision<br>
             <input type="checkbox" value="Error 404" onchange="calculateTotal()"> Error 404<br>
             <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)<br>
         </div>
-        <h4>Non-Technical Events (₹200 each, except Free-Fire Tournament ₹100):</h4>
+        <h4>Non-Technical Events (₹200 total, except Free-Fire Tournament ₹100):</h4>
         <div id="non-technical-events">
             <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest<br>
             <input type="checkbox" value="Free-Fire Tournament" onchange="calculateTotal()"> Free-Fire Tournament (₹100)<br>
