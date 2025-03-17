@@ -95,6 +95,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
         .container {
             background: white;
@@ -102,7 +103,7 @@
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 350px;
-            text-align: center;
+            text-align: left;
             animation: fadeIn 1s;
         }
         label, input, select {
@@ -113,10 +114,11 @@
         h4 {
             margin: 15px 0 5px;
         }
-        .event-label {
-            display: flex;
+        .event-grid {
+            display: grid;
+            grid-template-columns: auto 40px;
             align-items: center;
-            justify-content: space-between;
+            gap: 5px;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
