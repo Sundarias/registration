@@ -21,19 +21,15 @@
             otherDept.style.display = deptSelect.value === "Other" ? "block" : "none";
         }
 
-
         function calculateTotal() {
             let total = 0;
-            let attendingWorkshop = document.getElementById("workshop").value === "Yes";
-            let attendingEvents = document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").length > 0;
-            
-            if (attendingWorkshop) total += 250;
-            if (attendingEvents) total += 200;
-            
+            if (document.getElementById("workshop").value === "Yes") total += 250;
+            let techSelected = document.querySelectorAll("#technical-events input:checked").length > 0;
+            let nonTechSelected = document.querySelectorAll("#non-technical-events input:checked").length > 0;
+            if (techSelected || nonTechSelected) total += 200;
             document.querySelectorAll("#technical-events input:checked, #non-technical-events input:checked").forEach(e => {
                 if (e.value === "IPL Auction" || e.value === "Free-Fire Tournament") total += 100;
             });
-            
             document.getElementById("total-fee").innerText = `₹${total}`;
         }
 
@@ -75,76 +71,58 @@
                 alert("Error: " + error.message);
             });
         }
-    </script>
 
-<style>
-        body {
-            background: linear-gradient(135deg, #f8ffae, #43c6ac);
-            font-family: Arial, sans-serif;
+        function payWithUPI() {
+            let amount = document.getElementById("total-fee").innerText.replace("₹", "");
+            let upiID = "sundarfscop-1@okhdfcbank";
+            let upiLink = `upi://pay?pa=${upiID}&pn=EventRegistration&mc=&tid=&tr=&tn=Event+Registration&am=${amount}&cu=INR`;
+            window.location.href = upiLink;
         }
-        .container {
-            max-width: 700px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            margin-top: 50px;
-        }
-        .hidden {
-            display: none;
-        }
-</style>
-    
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #74ebd5, #9face6); text-align: center; }
+        .container { max-width: 500px; background: white; padding: 20px; border-radius: 10px; margin: auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
+        input, select, button { width: 100%; padding: 10px; margin-top: 10px; }
+        .event-section { text-align: left; margin-top: 10px; }
+    </style>
 </head>
 <body>
-    <form id="registrationForm" onsubmit="submitForm(event)">
-        <label>Name:</label>
-        <input type="text" id="name" required> <br> 
-        <label>Email:</label>
-        <input type="email" id="email" required> <br> 
-        <label>Department:</label>
-        <select id="department" onchange="checkOtherDepartment()">
-            <option value="CIVIL">CIVIL</option>
-            <option value="MECH">MECH</option>
-            <option value="ECE">ECE</option>
-            <option value="EEE">EEE</option>
-            <option value="CSE">CSE</option>
-            <option value="Other">Other</option>
-        </select>
-        <input type="text" id="other-dept" placeholder="Enter department" style="display: none;"> <br> 
-        <label>Phone No:</label>
-        <input type="tel" id="phone" required> <br> 
-        <label>Year:</label>
-        <select id="year">
-            <option>I</option>
-            <option>II</option>
-            <option>III</option>
-            <option>IV</option>
-        </select> <br> 
-        <label>College Name:</label>
-        <input type="text" id="college" required> <br> 
-        <label>Workshop (₹250):</label>
-        <select id="workshop" onchange="calculateTotal()">
-            <option value="No">No</option>
-            <option value="Yes">Yes</option>
-        </select> <br> 
-        <h4>Technical Events (₹200 total, except IPL Auction ₹100):</h4>
-        <div id="technical-events">
-            <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation<br>
-            <input type="checkbox" value="Innovision" onchange="calculateTotal()"> Innovision<br>
-            <input type="checkbox" value="Error 404" onchange="calculateTotal()"> Error 404<br>
-            <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)<br>
-        </div> <br> 
-        <h4>Non-Technical Events (₹200 total, except Free-Fire Tournament ₹100):</h4>
-        <div id="non-technical-events">
-            <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest<br>
-            <input type="checkbox" value="Free-Fire Tournament" onchange="calculateTotal()"> Free-Fire Tournament (₹100)<br>
-        </div>
-        <h4>Total Fee: <span id="total-fee">₹0</span></h4>
-        <button type="submit">Submit Registration</button>
-    </form>
+    <div class="container">
+        <h2>Event Registration</h2>
+        <form id="registrationForm" onsubmit="submitForm(event)">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <select id="department" onchange="checkOtherDepartment()">
+                <option value="CIVIL">CIVIL</option>
+                <option value="MECH">MECH</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="CSE">CSE</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" id="other-dept" placeholder="Enter department" style="display: none;">
+            <input type="tel" id="phone" placeholder="Phone No" required>
+            <input type="text" id="college" placeholder="College Name" required>
+            <select id="workshop" onchange="calculateTotal()">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+            <div class="event-section" id="technical-events">
+                <h4>Technical Events</h4>
+                <input type="checkbox" value="Watt a Presentation" onchange="calculateTotal()"> Watt a Presentation
+                <input type="checkbox" value="IPL Auction" onchange="calculateTotal()"> IPL Auction (₹100)
+            </div>
+            <div class="event-section" id="non-technical-events">
+                <h4>Non-Technical Events</h4>
+                <input type="checkbox" value="Photography Contest" onchange="calculateTotal()"> Photography Contest
+            </div>
+            <h4>Total Fee: <span id="total-fee">₹0</span></h4>
+            <button type="submit">Submit</button>
+            <button type="button" onclick="payWithUPI()">Pay with UPI</button>
+        </form>
+    </div>
 </body>
 </html>
