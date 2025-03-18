@@ -25,6 +25,8 @@ function submitForm(e) {
     var phone = document.getElementById('phone')?.value || "";
     var college = document.getElementById('college')?.value || "";
     var workshop = document.getElementById('workshop')?.value || "No"; // Default to "No" if not found
+    var accommodation = document.getElementById('accommodation')?.value || "No"; // Default to "No" if not found
+    var food = document.getElementById('food')?.value || "Non - Veg"; // Default to "No" if not found
     var totalFeeElement = document.getElementById('total-fee');
     var totalFee = totalFeeElement ? totalFeeElement.innerText.replace("₹", "") : "0";
 
@@ -33,7 +35,7 @@ function submitForm(e) {
     var selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(cb => cb.value);
 
     // Debugging: Check if any field is empty
-    if (!name || !email || !phone  || !college) {
+    if (!name || !email || !phone  || !college || !accommodation || !food) {
         alert("Please fill in all required fields!");
         return;
     }
@@ -46,6 +48,8 @@ function submitForm(e) {
         phone: phone,
         college: college,
         workshop: workshop,
+        accommodation: accommodation,
+        food: food,
         technicalEvents: selectedTechEvents,
         nonTechnicalEvents: selectedNonTechEvents,
         totalFee: totalFee,
