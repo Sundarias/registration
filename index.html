@@ -47,6 +47,8 @@
             const phone = document.getElementById("phone").value;
             const college = document.getElementById("college").value;
             const workshop = document.getElementById("workshop").value;
+            const accommodation = document.getElementById("accommodation").value;
+            const food = document.getElementById("food").value;
             let selectedTechEvents = Array.from(document.querySelectorAll("#technical-events input:checked")).map(e => e.value);
             let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
             const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
@@ -63,6 +65,8 @@
                 phone,
                 college,
                 workshop,
+                accommodation,
+                food,
                 technicalEvents: selectedTechEvents,
                 nonTechnicalEvents: selectedNonTechEvents,
                 totalFee,
@@ -221,6 +225,14 @@
             <select id="workshop" onchange="calculateTotal()">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
+            </select>
+            <select id="accommodation" >
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+            <select id="food" >
+                <option value="Non - Veg">Non - Veg</option>
+                <option value="Veg">Veg</option>
             </select>
             <h4>Technical Events</h4>
             
