@@ -209,6 +209,7 @@
             <input type="email" id="email" required>
             <label>Department:</label>
             <select id="department" onchange="checkOtherDepartment()">
+                <option value="" disabled selected>Select</option>
                 <option value="CIVIL">CIVIL</option>
                 <option value="MECH">MECH</option>
                 <option value="ECE">ECE</option>
@@ -223,16 +224,19 @@
             <input type="text" id="college" required>
             <label>Workshop (₹250):</label>
             <select id="workshop" onchange="calculateTotal()">
+                <option value="" disabled selected>Select</option>
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
             </select>
             <label>Accommodation:</label>
             <select id="accommodation" >
+                <option value="" disabled selected>Select</option>
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
             </select>
             <label>Food:</label>
             <select id="food" >
+                <option value="" disabled selected>Select</option>
                 <option value="Non - Veg">Non - Veg</option>
                 <option value="Veg">Veg</option>
             </select>
