@@ -34,7 +34,7 @@
                 total += 200;
             }
             if (selectedEvents.has("IPL Auction")) total += 100;
-            if (selectedEvents.has("Free-Fire Tournament")) total += 100;
+            if (selectedEvents.has("Free-Fire Tournament")) total += 60;
             document.getElementById("total-fee").innerText = `₹${total}`;
         }
 
@@ -284,7 +284,7 @@
                 <label>IPL Auction (₹100)</label>
                 <input type="checkbox" value="IPL Auction" onchange="calculateTotal()">
 
-                <label>Free-Fire Tournament (₹100)</label>
+                <label>Free-Fire Tournament (₹60)</label>
                 <input type="checkbox" value="Free-Fire Tournament" onchange="calculateTotal()">
             </div>
             <h4>Total Fee: <span id="total-fee">₹0</span></h4>
