@@ -22,6 +22,7 @@ function submitForm(e) {
     var email = document.getElementById('email')?.value || "";
     var department = document.getElementById('department')?.value || "";
     var otherDept = document.getElementById('other-dept')?.value || "";
+    var year = document.getElementById('year')?.value || "";
     var phone = document.getElementById('phone')?.value || "";
     var college = document.getElementById('college')?.value || "";
     var workshop = document.getElementById('workshop')?.value || "No"; // Default to "No" if not found
@@ -45,6 +46,7 @@ function submitForm(e) {
         name: name,
         email: email,
         department: department === "Other" ? otherDept : department,
+        year: year
         phone: phone,
         college: college,
         workshop: workshop,
