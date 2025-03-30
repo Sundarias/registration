@@ -44,6 +44,7 @@
             const email = document.getElementById("email").value;
             const department = document.getElementById("department").value;
             const otherDept = document.getElementById("other-dept").value;
+            const year = document.getElementById("year").value;
             const phone = document.getElementById("phone").value;
             const college = document.getElementById("college").value;
             const workshop = document.getElementById("workshop").value;
@@ -53,7 +54,7 @@
             let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
             const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
 
-            if (!name || !email || !phone || !college || !accommodation || !food) {
+            if (!name || !email || !phone ||!year || !college || !accommodation || !food) {
                 alert("Please fill in all required fields!");
                 return;
             }
@@ -62,6 +63,7 @@
                 name,
                 email,
                 department: department === "Other" ? otherDept : department,
+                year,
                 phone,
                 college,
                 workshop,
@@ -218,6 +220,14 @@
                 <option value="Other">Other</option>
             </select>
             <input type="text" id="other-dept" placeholder="Enter department" style="display: none;">
+            <label>Year</label>
+            <select id="year">
+                <option value="" disabled selected>Select</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+            </select>
             <label>Phone No:</label>
             <input type="tel" id="phone" required>
             <label>College Name:</label>
