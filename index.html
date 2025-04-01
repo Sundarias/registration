@@ -54,7 +54,7 @@
             let selectedNonTechEvents = Array.from(document.querySelectorAll("#non-technical-events input:checked")).map(e => e.value);
             const totalFee = document.getElementById("total-fee").innerText.replace("₹", "");
 
-            if (!name || !email || !phone ||!year || !college || !accommodation || !food) {
+            if (!name || !email || !phone ||!year || !college || !workshop || !accommodation || !food) {
                 alert("Please fill in all required fields!");
                 return;
             }
